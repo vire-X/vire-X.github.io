@@ -1,0 +1,143 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"><meta name="author" content="John Doe"><meta name="renderer" content="webkit"><meta name="copyright" content="John Doe"><meta name="keywords" content="Hexo"><meta name="description" content=""><meta name="Cache-Control" content="no-cache"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><title>常见的dos命令 · vire-X's Blog</title><link rel="stylesheet" href="/css/style.css?v=2019.11.21"><link rel="stylesheet" href="/css/animation.css?v=2019.11.21"><link rel="icon" href="/img/assets/favicon.ico"><link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css?version=1.5.6"><!-- scripts--><script>(function( w ){
+  "use strict";
+  // rel=preload support test
+  if( !w.loadCSS ){
+    w.loadCSS = function(){};
+  }
+  // define on the loadCSS obj
+  var rp = loadCSS.relpreload = {};
+  // rel=preload feature support test
+  // runs once and returns a function for compat purposes
+  rp.support = (function(){
+    var ret;
+    try {
+      ret = w.document.createElement( "link" ).relList.supports( "preload" );
+    } catch (e) {
+      ret = false;
+    }
+    return function(){
+      return ret;
+    };
+  })();
+
+  // if preload isn't supported, get an asynchronous load by using a non-matching media attribute
+  // then change that media back to its intended value on load
+  rp.bindMediaToggle = function( link ){
+    // remember existing media attr for ultimate state, or default to 'all'
+    var finalMedia = link.media || "all";
+
+    function enableStylesheet(){
+      link.media = finalMedia;
+    }
+
+    // bind load handlers to enable media
+    if( link.addEventListener ){
+      link.addEventListener( "load", enableStylesheet );
+    } else if( link.attachEvent ){
+      link.attachEvent( "onload", enableStylesheet );
+    }
+
+    // Set rel and non-applicable media type to start an async request
+    // note: timeout allows this to happen async to let rendering continue in IE
+    setTimeout(function(){
+      link.rel = "stylesheet";
+      link.media = "only x";
+    });
+    // also enable media after 3 seconds,
+    // which will catch very old browsers (android 2.x, old firefox) that don't support onload on link
+    setTimeout( enableStylesheet, 3000 );
+  };
+
+  // loop through link elements in DOM
+  rp.poly = function(){
+    // double check this to prevent external calls from running
+    if( rp.support() ){
+      return;
+    }
+    var links = w.document.getElementsByTagName( "link" );
+    for( var i = 0; i < links.length; i++ ){
+      var link = links[ i ];
+      // qualify links to those with rel=preload and as=style attrs
+      if( link.rel === "preload" && link.getAttribute( "as" ) === "style" && !link.getAttribute( "data-loadcss" ) ){
+        // prevent rerunning on link
+        link.setAttribute( "data-loadcss", true );
+        // bind listeners to toggle media back
+        rp.bindMediaToggle( link );
+      }
+    }
+  };
+
+  // if unsupported, run the polyfill
+  if( !rp.support() ){
+    // run once at least
+    rp.poly();
+
+    // rerun poly on an interval until onload
+    var run = w.setInterval( rp.poly, 500 );
+    if( w.addEventListener ){
+      w.addEventListener( "load", function(){
+        rp.poly();
+        w.clearInterval( run );
+      } );
+    } else if( w.attachEvent ){
+      w.attachEvent( "onload", function(){
+        rp.poly();
+        w.clearInterval( run );
+      } );
+    }
+  }
+
+
+  // commonjs
+  if( typeof exports !== "undefined" ){
+    exports.loadCSS = loadCSS;
+  }
+  else {
+    w.loadCSS = loadCSS;
+  }
+}( typeof global !== "undefined" ? global : this ) );</script><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js" defer></script><script src="/js/main.js?v=2019.11.21" defer></script><!-- fancybox--><link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'"><script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" defer></script><!-- busuanzi--><script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script></head><body><section class="profile-close" id="cxo-profile"><div class="profile-avatar"><i class="fa fa-caret-left"></i><img src="/img/assets/cat.png"></div><!--.profile-saying
+  i.fa.fa-comment
+  .saying--><div class="cxo-profile-inner"><div class="profile-name">vire-X</div><div class="profile-signature">good night！</div><div class="friends"><div>FRIENDS</div><span><a href="//github.com/Longlongyu" target="_black">friendA</a></span><span><a href="//github.com/" target="_black">friendB</a></span><span><a href="//github.com/" target="_black">friendC</a></span></div><div class="read-progress"></div></div></section><header id="cxo-intro" style="height: 70vh;background-image: url(/img/intro/index-bg.png);"><nav id="cxo-intro-nav"><section><div class="intro-nav-title"><a href="/">vire-X's Blog</a></div><div class="intro-nav-label-box"><a href="/">Home</a><a href="/about/">About</a><a href="/archives/">Archives</a><a href="/tags/">Tags</a></div><i class="fa fa-bars intro-nav-menu"><div class="intro-nav-drop"><a href="/">Home</a><a href="/about/">About</a><a href="/archives/">Archives</a><a href="/tags/">Tags</a></div></i><div class="clear"></div></section></nav><h1 class="post-title">常见的dos命令</h1><div class="post-intros"><div class="post-intro-meta"><span class="post-intro-time"><i class="post-intro-calendar fa fa-calendar"></i><span>2019-11-29</span></span></div><div class="post-intro-read"><span> Word count: <span class="post-count">517</span> | Reading time: <span class="post-count">1</span>min</span></div></div></header><article class="cxo-up" id="cxo-content-outer"><section id="cxo-content-inner"><article class="article-entry" id="post"><h2 id="JDK、JRE、JVM的关系"><a href="#JDK、JRE、JVM的关系" class="headerlink" title="JDK、JRE、JVM的关系"></a>JDK、JRE、JVM的关系</h2><p>JDK=JRE+开发工具集(例如java编译工具等)</p>
+<p>JRE=JVM+javaSE标准类库</p>
+<h2 id="常见的dos命令"><a href="#常见的dos命令" class="headerlink" title="常见的dos命令"></a>常见的dos命令</h2><p>–&gt; dir  列出当前目录下的文件以及文件夹</p>
+<p>–&gt; d:   切换到D盘</p>
+<p>–&gt;cls   清屏</p>
+<p>–&gt;md  创建目录</p>
+<p>–&gt;rd    删除目录</p>
+<p>–&gt;cd    进入指定目录</p>
+<p>–&gt;cd..  退回到上一级目录</p>
+<p>–&gt;cd\   回到根目录</p>
+<p>–&gt;del   删除文件</p>
+<p>–&gt;exit   退出dos命令行</p>
+<h2 id="注释"><a href="#注释" class="headerlink" title="注释"></a>注释</h2><p>1、单行注释   –  //</p>
+<p>2、多行注释    – /*    */</p>
+<p>3、文档注释（java特有）</p>
+<h5 id="文档注释（java特有）"><a href="#文档注释（java特有）" class="headerlink" title="文档注释（java特有）"></a>文档注释（java特有）</h5><p>格式：</p>
+<p>/**</p>
+<p>*@author 指定java程序的作者</p>
+<p>*@version 指定源文件的版本</p>
+<p>*@param 方法的参数信息说明</p>
+<p>*/</p>
+<p>示例：</p>
+<p>/**这是我的第一个java程序</p>
+<p>@author  qjj</p>
+<p>@version v1.0</p>
+<p>*/</p>
+<p><strong>文档注释内容可以被javadoc所解析，生成一套以网页文件形式体现的该程序的说明文档，文档注释是可以被读到的。</strong></p>
+<p>注：</p>
+<p><strong>1.对于单行和多行注释，被注释的文字不会被JVM解释执行。</strong></p>
+<p>2.<strong>多行注释里不允许有多行注释嵌套</strong></p>
+<p>多注释，多注释，多注释，不然过两天自己都看不懂</p>
+<h4 id="输出简单程序hello-world"><a href="#输出简单程序hello-world" class="headerlink" title="输出简单程序hello world"></a>输出简单程序hello world</h4><p>总结：</p>
+<p>1.源文件以.java结尾。</p>
+<p>2.编译–&gt;javac 源文件名.java</p>
+<p>   运行–&gt;java  类名</p>
+<p>3.源文件中可以有多个class声明的类，编译后，会生成一个或多个字节码文件，字节码文件名与java源文件名中的类名相同。</p>
+<p>4.类中可以有主方法（main（）方法），其格式是固定的：<strong>public static void main(String[ ] args){}</strong></p>
+<p>5.main()方法是程序的入口，方法内是程序的执行部分（有点像c语言的函数）</p>
+<p>6.一个源文件中只能有一个声明为public 的类，同时要求此类的类名与源文件名一致。</p>
+<p>7.每个语句都以；结束。</p>
+<p>8.执行程序：编译：javac.exe 编译完，生成诸多个.class字节码文件。 运行java.exe】</p>
+<p>9.System.out.println() : 先输出再换行</p>
+<p>System.out.print() : 只输出</p>
+<h4 id=""><a href="#" class="headerlink" title=""></a></h4></article><!-- lincense--><div class="license-wrapper"><p> <span>Author:  </span><a href="http://yoursite.com">John Doe</a></p><p> <span>Link:  </span><a href="http://yoursite.com/2019/11/29/%E5%B8%B8%E8%A7%81%E7%9A%84dos%E5%91%BD%E4%BB%A4/">http://yoursite.com/2019/11/29/%E5%B8%B8%E8%A7%81%E7%9A%84dos%E5%91%BD%E4%BB%A4/</a></p><p> <span>Copyright:  </span><span>All articles in this blog are licensed under <a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/3.0" target="_blank">CC BY-NC-SA 3.0</a> unless stating additionally.</span></p></div><div class="post-paginator"><a class="nextSlogan" href="/2019/11/29/%E5%8F%98%E9%87%8F%E5%8F%8A%E6%A0%87%E8%AF%86%E7%AC%A6/" title="变量及标识符"><span>NextPost ></span><br><span class="nextTitle">变量及标识符</span></a><div class="clear"></div></div><div id="comment"></div></section></article><footer id="cxo-footer-outer"><div id="cxo-footer-inner"><p class="footer-container"><span>Site by </span><a href="http://hexo.io" target="_blank" rel="noopener"><span>Hexo</span></a><span> | theme </span><a href="https://github.com/Longlongyu/hexo-theme-Cxo" target="_blank" rel="noopener"><span>Cxo</span></a></p><i class="fa fa-user"> </i><span id="busuanzi_value_site_uv"></span><span> | </span><i class="fa fa-eye"> </i><span id="busuanzi_value_site_pv"></span></div></footer><!-- catelog--><div class="toc-wrapper" style="top: 70vh;"><div class="toc-catalog"><i class="fa fa-list"> </i><span>CATALOG</span></div><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#JDK、JRE、JVM的关系"><span class="toc-number">1.</span> <span class="toc-text">JDK、JRE、JVM的关系</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#常见的dos命令"><span class="toc-number">2.</span> <span class="toc-text">常见的dos命令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#注释"><span class="toc-number">3.</span> <span class="toc-text">注释</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#文档注释（java特有）"><span class="toc-number">3.0.0.1.</span> <span class="toc-text">文档注释（java特有）</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#输出简单程序hello-world"><span class="toc-number">3.0.1.</span> <span class="toc-text">输出简单程序hello world</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#null"><span class="toc-number">3.0.2.</span> <span class="toc-text"></span></a></li></ol></li></ol></li></ol></div><!-- top--><i class="fa fa-arrow-up close" id="go-up" aria-hidden="true"></i></body></html>
