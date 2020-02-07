@@ -1,0 +1,250 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"><meta name="author" content="John Doe"><meta name="renderer" content="webkit"><meta name="copyright" content="John Doe"><meta name="keywords" content="Hexo"><meta name="description" content=""><meta name="Cache-Control" content="no-cache"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><title>面向对象(类和方法) · vire-X's Blog</title><link rel="stylesheet" href="/css/style.css?v=2019.11.21"><link rel="stylesheet" href="/css/animation.css?v=2019.11.21"><link rel="icon" href="/img/assets/favicon.ico"><link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css?version=1.5.6"><!-- scripts--><script>(function( w ){
+  "use strict";
+  // rel=preload support test
+  if( !w.loadCSS ){
+    w.loadCSS = function(){};
+  }
+  // define on the loadCSS obj
+  var rp = loadCSS.relpreload = {};
+  // rel=preload feature support test
+  // runs once and returns a function for compat purposes
+  rp.support = (function(){
+    var ret;
+    try {
+      ret = w.document.createElement( "link" ).relList.supports( "preload" );
+    } catch (e) {
+      ret = false;
+    }
+    return function(){
+      return ret;
+    };
+  })();
+
+  // if preload isn't supported, get an asynchronous load by using a non-matching media attribute
+  // then change that media back to its intended value on load
+  rp.bindMediaToggle = function( link ){
+    // remember existing media attr for ultimate state, or default to 'all'
+    var finalMedia = link.media || "all";
+
+    function enableStylesheet(){
+      link.media = finalMedia;
+    }
+
+    // bind load handlers to enable media
+    if( link.addEventListener ){
+      link.addEventListener( "load", enableStylesheet );
+    } else if( link.attachEvent ){
+      link.attachEvent( "onload", enableStylesheet );
+    }
+
+    // Set rel and non-applicable media type to start an async request
+    // note: timeout allows this to happen async to let rendering continue in IE
+    setTimeout(function(){
+      link.rel = "stylesheet";
+      link.media = "only x";
+    });
+    // also enable media after 3 seconds,
+    // which will catch very old browsers (android 2.x, old firefox) that don't support onload on link
+    setTimeout( enableStylesheet, 3000 );
+  };
+
+  // loop through link elements in DOM
+  rp.poly = function(){
+    // double check this to prevent external calls from running
+    if( rp.support() ){
+      return;
+    }
+    var links = w.document.getElementsByTagName( "link" );
+    for( var i = 0; i < links.length; i++ ){
+      var link = links[ i ];
+      // qualify links to those with rel=preload and as=style attrs
+      if( link.rel === "preload" && link.getAttribute( "as" ) === "style" && !link.getAttribute( "data-loadcss" ) ){
+        // prevent rerunning on link
+        link.setAttribute( "data-loadcss", true );
+        // bind listeners to toggle media back
+        rp.bindMediaToggle( link );
+      }
+    }
+  };
+
+  // if unsupported, run the polyfill
+  if( !rp.support() ){
+    // run once at least
+    rp.poly();
+
+    // rerun poly on an interval until onload
+    var run = w.setInterval( rp.poly, 500 );
+    if( w.addEventListener ){
+      w.addEventListener( "load", function(){
+        rp.poly();
+        w.clearInterval( run );
+      } );
+    } else if( w.attachEvent ){
+      w.attachEvent( "onload", function(){
+        rp.poly();
+        w.clearInterval( run );
+      } );
+    }
+  }
+
+
+  // commonjs
+  if( typeof exports !== "undefined" ){
+    exports.loadCSS = loadCSS;
+  }
+  else {
+    w.loadCSS = loadCSS;
+  }
+}( typeof global !== "undefined" ? global : this ) );</script><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js" defer></script><script src="/js/main.js?v=2019.11.21" defer></script><!-- fancybox--><link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'"><script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" defer></script><!-- busuanzi--><script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script></head><body><section class="profile-close" id="cxo-profile"><div class="profile-avatar"><i class="fa fa-caret-left"></i><img src="/img/assets/cat.png"></div><!--.profile-saying
+  i.fa.fa-comment
+  .saying--><div class="cxo-profile-inner"><div class="profile-name">vire-X</div><div class="profile-signature">good night！</div><div class="friends"><div>FRIENDS</div><span><a href="//github.com/Longlongyu" target="_black">friendA</a></span><span><a href="//github.com/" target="_black">friendB</a></span><span><a href="//github.com/" target="_black">friendC</a></span></div><div class="read-progress"></div></div></section><header id="cxo-intro" style="height: 70vh;background-image: url(/img/intro/index-bg.png);"><nav id="cxo-intro-nav"><section><div class="intro-nav-title"><a href="/">vire-X's Blog</a></div><div class="intro-nav-label-box"><a href="/">Home</a><a href="/about/">About</a><a href="/archives/">Archives</a><a href="/tags/">Tags</a></div><i class="fa fa-bars intro-nav-menu"><div class="intro-nav-drop"><a href="/">Home</a><a href="/about/">About</a><a href="/archives/">Archives</a><a href="/tags/">Tags</a></div></i><div class="clear"></div></section></nav><h1 class="post-title">面向对象(类和方法)</h1><div class="post-intros"><div class="post-intro-meta"><span class="post-intro-time"><i class="post-intro-calendar fa fa-calendar"></i><span>2020-02-07</span></span></div><div class="post-intro-read"><span> Word count: <span class="post-count">1.5k</span> | Reading time: <span class="post-count">6</span>min</span></div></div></header><article class="cxo-up" id="cxo-content-outer"><section id="cxo-content-inner"><article class="article-entry" id="post"><h1 id="java—面向对象（类与方法）"><a href="#java—面向对象（类与方法）" class="headerlink" title="java—面向对象（类与方法）"></a>java—面向对象（类与方法）</h1><p><strong>面向对象的三条主线</strong></p>
+<p>1、java类及类的成员：属性、方法、构造器；代码块、内部类</p>
+<p>2、面向对象的三大特征：封装性、继承性、多态性（、抽象性）</p>
+<p>3、其他关键字：如 this、super、static、final、abstract等</p>
+<h6 id="类和对象都是面对对象的核心概念"><a href="#类和对象都是面对对象的核心概念" class="headerlink" title="类和对象都是面对对象的核心概念"></a>类和对象都是面对对象的核心概念</h6><h5 id="类-是对一类事物的描述，是抽象的、概念至上的定义"><a href="#类-是对一类事物的描述，是抽象的、概念至上的定义" class="headerlink" title="类 是对一类事物的描述，是抽象的、概念至上的定义"></a>类 是对一类事物的描述，是抽象的、概念至上的定义</h5><p><strong>对象  是实际存在的该类事物的每个个体，因而也称为实例</strong></p>
+<p>面向程序设计的重点其实就是<strong>类的设计</strong></p>
+<p>设计类，就是<strong>设计类的成员</strong></p>
+<h3 id="类和对象的使用"><a href="#类和对象的使用" class="headerlink" title="类和对象的使用"></a>类和对象的使用</h3><p>1、创建类，设计类的成员</p>
+<p>2、创建类的对象</p>
+<p>3、通过 “ 对象 . 属性 “ 或 “ 对象 . 方法 ” 调用对象的结构</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PersonTest</span> </span>&#123;</span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">	<span class="comment">//创建Person类的对象</span></span><br><span class="line">	 Person p1 = <span class="keyword">new</span> Person();</span><br><span class="line">	 <span class="comment">//Scanner scanner = new Scanner(System.in);</span></span><br><span class="line">	 </span><br><span class="line">	 <span class="comment">//调用对象的结构；属性、方法</span></span><br><span class="line">	 <span class="comment">//调用属性："对象.属性"</span></span><br><span class="line">	 p1.name = <span class="string">"Tom"</span>;</span><br><span class="line">	 System.out.println(p1.name);<span class="comment">//Tom</span></span><br><span class="line"></span><br><span class="line">     <span class="comment">//调用方法:"对象.方法"</span></span><br><span class="line">	 p1.eat();<span class="comment">//人可以吃饭</span></span><br><span class="line">	 p1.talk(<span class="string">"Chinese"</span>);<span class="comment">// 人可以说话，用的是Chinese</span></span><br><span class="line">     <span class="comment">//*********多个对象***********</span></span><br><span class="line">     <span class="comment">//将p1变量的地址赋给了p2，导致p1、p2指向了堆空间的同一个对象实体</span></span><br><span class="line">     Person p2 = p1;</span><br><span class="line">     System.out.println(p2.name);<span class="comment">//Tom</span></span><br><span class="line">     </span><br><span class="line">     p2.age = <span class="number">10</span>;</span><br><span class="line">     System.out.pirntln(p1.age);<span class="comment">//10</span></span><br><span class="line">     </span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line">	<span class="comment">//属性 (像c中的结构struct.可以定义一整套变量)</span></span><br><span class="line">	 String name;</span><br><span class="line">	 <span class="keyword">int</span> age = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//方法(像c中的函数.可以直接调用来实现其功能)</span></span><br><span class="line">	 <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">eat</span><span class="params">()</span></span>&#123;</span><br><span class="line">	   System.out.println(<span class="string">"人可以吃饭"</span>);</span><br><span class="line">	 &#125;</span><br><span class="line">	 <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">talk</span><span class="params">(String language)</span></span>&#123;</span><br><span class="line">	  System.out.println(<span class="string">"人可以说话,用的是:"</span>+ language);</span><br><span class="line">	  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Field = 属性 = 成员变量，Method = （成员）方法 = 函数</p>
+<p>创建类的对象 = 类的实例化 = 实例化类</p>
+<p>如果创建了<strong>一个类</strong>的<strong>多个对象</strong>，则每一个对象都<strong>独立</strong>拥有<strong>一套</strong>类的属性。（非static的）</p>
+<h3 id="类中属性的使用"><a href="#类中属性的使用" class="headerlink" title="类中属性的使用"></a>类中属性的使用</h3><p><strong>属性（成员变量） vs  局部变量</strong></p>
+<ul>
+<li>1、相同点：</li>
+<li>1.1定义变量的格式：数据类型 变量名 = 变量值</li>
+<li>1.2先声明,后使用</li>
+<li>1.3变量都有其对应的作用域</li>
+<li></li>
+<li>2、不同点：</li>
+<li>2.1在类的声明位置不同<ul>
+<li><strong>属性：直接定义在类中的一对{ }内</strong></li>
+<li><strong>局部变量：声明在方法内、方法形参、代码块内、构造器内、构造器形参的变量</strong></li>
+</ul>
+</li>
+<li></li>
+<li>2.2关于权限修饰符的不同<ul>
+<li>属性 ：可以在声明属性的时候 , 指明其权限、使用权限修饰符</li>
+<li>常用的权限修饰符：privat、public、缺省、protected—&gt;封装性</li>
+<li>局部变量：不可以使用权限修饰符</li>
+</ul>
+</li>
+<li></li>
+<li>2.3<strong>默认初始化值的情况</strong><ul>
+<li>属性：类的属性，根据其类型，都有默认初始化值</li>
+<li>整型（byte、short、int、long）：0</li>
+<li>浮点型（float、double）：0.0</li>
+<li>字符型（char）：0 （或’ \u0000 ‘）</li>
+<li>布尔型（Boolean）：false</li>
+</ul>
+</li>
+<li><ul>
+<li>引用数据类型（类、数组、接口）：null</li>
+</ul>
+</li>
+<li><ul>
+<li><strong>局部变量：没有默认初始化值</strong></li>
+<li>意味着，我们在调用局部变量之前，一定要显式赋值</li>
+<li>特别的，形参在调用时，</li>
+</ul>
+</li>
+<li>2.4在内存中的位置<ul>
+<li>属性：加载在堆空间中</li>
+<li>局部变量：加载在栈空间中  </li>
+</ul>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">	     User u1 = <span class="keyword">new</span> User();</span><br><span class="line">	     System.out.println(u1.name);<span class="comment">//null 未初始化</span></span><br><span class="line">	     System.out.println(u1.age);<span class="comment">//0 未初始化</span></span><br><span class="line">	     System.out.println(u1.isMale);<span class="comment">//false 未初始化</span></span><br><span class="line">		 u1.talk(<span class="string">"日语"</span>);<span class="comment">//给形参赋值</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">User</span></span>&#123;</span><br><span class="line">	<span class="comment">//属性（成员变量）</span></span><br><span class="line">	String name;</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">int</span> age;</span><br><span class="line">	<span class="keyword">boolean</span> isMale;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">talk</span><span class="params">(String language)</span> </span>&#123;<span class="comment">//language：形参，也是局部变量</span></span><br><span class="line">		System.out.println(<span class="string">"我们使用"</span> + language + <span class="string">"进行交流"</span>);</span><br><span class="line">	&#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">eat</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    	String food = <span class="string">"烙饼"</span>;<span class="comment">//局部变量</span></span><br><span class="line">    	System.out.println(<span class="string">"北方人喜欢吃："</span> + food);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="类中方法的声明和使用"><a href="#类中方法的声明和使用" class="headerlink" title="类中方法的声明和使用"></a>类中方法的声明和使用</h3><ul>
+<li><h4 id="方法：描述类应该具有的功能（类似于函数）"><a href="#方法：描述类应该具有的功能（类似于函数）" class="headerlink" title="方法：描述类应该具有的功能（类似于函数）"></a>方法：描述类应该具有的功能（类似于函数）</h4></li>
+<li><p>比如：Math类，sqrt类\random() .…</p>
+</li>
+<li><p>Scanner类 nextXxx()…</p>
+</li>
+<li><p>Arrays类：sort() \ binarySearch() \toString() \equals()…</p>
+</li>
+<li></li>
+<li><p>1.方法的声明：       //不可以给在定义形参时给形参赋值</p>
+</li>
+<li><p>​     <strong>权限修饰符  返回值类型  方法名(形参列表){</strong> </p>
+</li>
+<li><p>​       <strong>方法体   //方法其实类似于c语言中的函数</strong></p>
+</li>
+<li><p><strong>}</strong></p>
+</li>
+<li><p>举例：</p>
+</li>
+<li><p>public void eat(){…}</p>
+</li>
+<li><p>public void sleep(int hour){…}</p>
+</li>
+<li><p>public String getName(){…}</p>
+</li>
+<li><p>public String getNation(String nation){…}</p>
+</li>
+<li></li>
+<li><p>注意：static、final、abstract 来修饰方法</p>
+</li>
+<li></li>
+<li><p>3.说明：</p>
+</li>
+<li><p>3.1 关于权限修饰符：(封装性)</p>
+</li>
+<li><p><strong>java中四种权限修饰符：</strong></p>
+</li>
+<li><p><strong>private、public、缺省、protected</strong></p>
+</li>
+<li></li>
+<li><p><strong>3.2 返回值类型：有返回值、无返回值</strong></p>
+</li>
+<li><p>​      1、如果方法有返回值：则必须在方法声明是指定返回值的类型</p>
+</li>
+<li><p>同时，方法中需要使用return来返回指定类型的数据。</p>
+</li>
+<li><p>如果无返回值:则方法声明时使用void来表示，并且不带return</p>
+</li>
+<li><p>如果使用的话，只能用“return”; 表示方法结束的意思。</p>
+</li>
+<li></li>
+<li><p>​       2、方法是否需要返回值</p>
+</li>
+<li><p>​              依照题目要求和经验分析</p>
+</li>
+<li><p><strong>3.3 方法名：属于标识符。</strong></p>
+</li>
+<li></li>
+<li><p>标识符的规范规则：见名知意</p>
+</li>
+<li><p><strong>3.4 方法可以声明任意个形参</strong></p>
+</li>
+<li><p>格式：数据类型 形参 , 数据类型 形参, …..</p>
+</li>
+<li><p>3.5 方法体：方法功能的体现**</p>
+</li>
+<li><p><strong>4.return关键字的使用</strong></p>
+</li>
+<li><p>1.使用范围：方法体中</p>
+</li>
+<li><p>2.作用：  结束方法</p>
+</li>
+<li><p>针对有返回值的方法，用 return来返回数据</p>
+</li>
+<li><p>3.注意点：return关键字后不可以声明执行语句。</p>
+</li>
+<li></li>
+<li><p><strong>5.方法的使用中可以调用当前类中的属性和方法</strong></p>
+</li>
+<li><p>特殊：方法A中又调用了A方法–&gt; 递归方法</p>
+</li>
+<li><p><strong>方法中不可以定义方法</strong> </p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">public class CustomerTest &#123;</span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">	Customer cust1 = new Customer();</span><br><span class="line">	cust1.eat();</span><br><span class="line">	cust1.sleep(8);</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br><span class="line">//客户类</span><br><span class="line">class Customer&#123;</span><br><span class="line">	</span><br><span class="line">	//属性</span><br><span class="line">	String name;</span><br><span class="line">	int age;</span><br><span class="line">	Boolean isMale;</span><br><span class="line">	</span><br><span class="line">	//方法</span><br><span class="line">	public void eat() &#123;</span><br><span class="line">		System.out.println(&quot;顾客吃饭&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">	public void sleep(int hour) &#123;</span><br><span class="line">		System.out.println(&quot;休息了&quot; + hour + &quot;个小时&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">	public String getName()&#123;</span><br><span class="line">		if(age &gt; 18) &#123; //age在方法内未定义，但在属性中定义了</span><br><span class="line">			</span><br><span class="line">		&#125;</span><br><span class="line">		return name;</span><br><span class="line">	&#125;</span><br><span class="line">	public String getNation(String nation) &#123;</span><br><span class="line">		String info = &quot;我的国籍是，&quot; + nation;</span><br><span class="line">		return info;</span><br><span class="line">	&#125;</span><br><span class="line">	public void info() &#123;</span><br><span class="line">		//编译错误：不可以在方法中定义方法</span><br><span class="line">		public void swim() &#123;</span><br><span class="line">	   &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</article><!-- lincense--><div class="license-wrapper"><p> <span>Author:  </span><a href="http://yoursite.com">John Doe</a></p><p> <span>Link:  </span><a href="http://yoursite.com/2020/02/07/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1(%E7%B1%BB%E5%92%8C%E6%96%B9%E6%B3%95)/">http://yoursite.com/2020/02/07/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1(%E7%B1%BB%E5%92%8C%E6%96%B9%E6%B3%95)/</a></p><p> <span>Copyright:  </span><span>All articles in this blog are licensed under <a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/3.0" target="_blank">CC BY-NC-SA 3.0</a> unless stating additionally.</span></p></div><div class="post-paginator"><a class="nextSlogan" href="/2019/12/19/%E6%95%B0%E7%BB%84java/" title="数组java"><span>NextPost ></span><br><span class="nextTitle">数组java</span></a><div class="clear"></div></div><div id="comment"></div></section></article><footer id="cxo-footer-outer"><div id="cxo-footer-inner"><p class="footer-container"><span>Site by </span><a href="http://hexo.io" target="_blank" rel="noopener"><span>Hexo</span></a><span> | theme </span><a href="https://github.com/Longlongyu/hexo-theme-Cxo" target="_blank" rel="noopener"><span>Cxo</span></a></p><i class="fa fa-user"> </i><span id="busuanzi_value_site_uv"></span><span> | </span><i class="fa fa-eye"> </i><span id="busuanzi_value_site_pv"></span></div></footer><!-- catelog--><div class="toc-wrapper" style="top: 70vh;"><div class="toc-catalog"><i class="fa fa-list"> </i><span>CATALOG</span></div><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#java—面向对象（类与方法）"><span class="toc-number">1.</span> <span class="toc-text">java—面向对象（类与方法）</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#类和对象都是面对对象的核心概念"><span class="toc-number">1.0.0.0.0.1.</span> <span class="toc-text">类和对象都是面对对象的核心概念</span></a></li></ol></li><li class="toc-item toc-level-5"><a class="toc-link" href="#类-是对一类事物的描述，是抽象的、概念至上的定义"><span class="toc-number">1.0.0.0.1.</span> <span class="toc-text">类 是对一类事物的描述，是抽象的、概念至上的定义</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#类和对象的使用"><span class="toc-number">1.0.1.</span> <span class="toc-text">类和对象的使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#类中属性的使用"><span class="toc-number">1.0.2.</span> <span class="toc-text">类中属性的使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#类中方法的声明和使用"><span class="toc-number">1.0.3.</span> <span class="toc-text">类中方法的声明和使用</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#方法：描述类应该具有的功能（类似于函数）"><span class="toc-number">1.0.3.1.</span> <span class="toc-text">方法：描述类应该具有的功能（类似于函数）</span></a></li></ol></li></ol></li></ol></li></ol></div><!-- top--><i class="fa fa-arrow-up close" id="go-up" aria-hidden="true"></i></body></html>
